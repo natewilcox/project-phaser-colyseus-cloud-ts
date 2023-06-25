@@ -47,7 +47,7 @@ export default class ServerService {
     }
 
     sendMessage(msg: any) {
-        this.room.send(ClientMessages.SendMessage, { msg });
+        this.room.send(ClientMessages.SendMessage, msg);
     }
 
     onMessage(cb: (state: GameRoomState) => void, context?: any) {
