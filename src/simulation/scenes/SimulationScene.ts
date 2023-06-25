@@ -1,22 +1,21 @@
 import '@geckos.io/phaser-on-nodejs';
 import Phaser from "phaser";
-import { GameRoomState } from '../../rooms/schema/GameRoomState';
+import { GameRoom } from '../../rooms/GameRoom';
 
 export class SimulationScene extends Phaser.Scene {
 
-    private state: GameRoomState;
+    private room: GameRoom;
 
     constructor() {
         super("SimulationScene");
     }
 
-    create(config: { state: GameRoomState }) {
+    create(config: { room: GameRoom }) {
         console.log("simulation started");
-
-        this.state = config.state;
+        this.room = config.room;
     }
 
     update() {
-        this.state.tick++;
+        this.room.state.tick++;
     }
 }

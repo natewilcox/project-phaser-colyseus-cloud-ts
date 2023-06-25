@@ -1,13 +1,13 @@
 import config from "@colyseus/tools";
 import { monitor } from "@colyseus/monitor";
 import { playground } from "@colyseus/playground";
-import { MyRoom } from "./rooms/GameRoom";
+import { GameRoom } from "./rooms/GameRoom";
 
 export default config({
 
     initializeGameServer: (gameServer) => {
    
-        gameServer.define('my_room', MyRoom);
+        gameServer.define('my_room', GameRoom);
     },
 
     initializeExpress: (app) => {

@@ -1,8 +1,11 @@
 import * as Colyseus from "colyseus.js";
 import type { GameRoomState } from "../../rooms/schema/GameRoomState";
+import { ClientMessages } from "../../types/ClientMessages";
+import { ServerMessages } from "../../types/ServerMessages";
 
 export enum ServerEvents {
-    OnStateChange = 'onstatechange'
+    OnStateChange = 'onstatechange',
+    OnMessage = 'onmessage'
 }
 
 export default class ServerService {
@@ -29,14 +32,25 @@ export default class ServerService {
                 this.serverEvents.emit(ServerEvents.OnStateChange, state);
             });
 
+             this.room.onMessage(ServerMessages.SendMessage, (data) => {
+                this.serverEvents.emit(ServerEvents.OnMessage, data);
+            });
+
         }
         catch(e) {
             console.log("JOIN ERROR", e);
         }
-
     }
 
     onStateChange(cb: (state: GameRoomState) => void, context?: any) {
         this.serverEvents.on(ServerEvents.OnStateChange, cb, context);
+    }
+
+    sendMessage(msg: any) {
+        this.room.send(ClientMessages.SendMessage, { msg });
+    }
+
+    onMessage(cb: (state: GameRoomState) => void, context?: any) {
+        this.serverEvents.on(ServerEvents.OnMessage, cb, context);
     }
 }

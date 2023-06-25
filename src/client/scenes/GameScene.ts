@@ -22,6 +22,12 @@ export class GameScene extends Phaser.Scene
 
         this.SERVER.onStateChange((state: GameRoomState) => {
             text.setText('tick: ' + state.tick);
+
+            if(state.tick % 10 == 0) {
+                this.SERVER.sendMessage({ msg: "Hello", broadcast: true });
+            }
         });
+
+        this.SERVER.onMessage(msg => console.log(msg));
     }
 }

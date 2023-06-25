@@ -2,17 +2,17 @@ import '@geckos.io/phaser-on-nodejs';
 import Phaser from "phaser";
 
 import { Command } from "@colyseus/command";
-import { MyRoom } from "../rooms/GameRoom";
+import { GameRoom } from "../rooms/GameRoom";
 import { SimulationScene } from "../simulation/scenes/SimulationScene";
 import { GameRoomState } from '../rooms/schema/GameRoomState';
 
 type Payload = {
-    state: GameRoomState
+    room: GameRoom
 };
 
-export class StartSimulationCommand extends Command<MyRoom, Payload> {
+export class StartSimulationCommand extends Command<GameRoom, Payload> {
 
-    async execute({ state }: Payload) {
+    async execute({ room }: Payload) {
 
         const FPS = 1;
         const config = {
@@ -33,6 +33,6 @@ export class StartSimulationCommand extends Command<MyRoom, Payload> {
 
         console.log("Starting simluation scene");
         const game = new Phaser.Game(config);
-        game.scene.add('SimulationScene', SimulationScene, true, { state });
+        game.scene.add('SimulationScene', SimulationScene, true, { room });
     }
 }

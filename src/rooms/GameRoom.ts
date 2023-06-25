@@ -2,17 +2,23 @@ import { Room, Client } from "@colyseus/core";
 import { GameRoomState } from "./schema/GameRoomState";
 import { Dispatcher } from "@colyseus/command";
 import { StartSimulationCommand } from "../commands/StartSimulationCommand";
+import { ClientMessages } from "../types/ClientMessages";
+import { ProcessMessageCommand } from "../commands/ProcessMessageCommand";
 
-export class MyRoom extends Room<GameRoomState> {
+export class GameRoom extends Room<GameRoomState> {
   
     maxClients = 4;
-    dispatcher: Dispatcher<MyRoom> = new Dispatcher(this);
+    dispatcher: Dispatcher<GameRoom> = new Dispatcher(this);
 
     onCreate (options: any) {
         console.info("Room created");
         
         this.setState(new GameRoomState());
-        this.dispatcher.dispatch(new StartSimulationCommand(), { state: this.state });
+        this.onMessage(ClientMessages.SendMessage, (client, data) => {
+            this.dispatcher.dispatch(new ProcessMessageCommand(), { client: client, ...data });
+        });
+
+        this.dispatcher.dispatch(new StartSimulationCommand(), { room: this });
     }
 
     onJoin (client: Client, options: any) {
