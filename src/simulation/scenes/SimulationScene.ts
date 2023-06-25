@@ -19,9 +19,7 @@ export class SimulationScene extends Phaser.Scene {
         this.CLIENT = config.CLIENT;
         this.CLIENT.onMessage((client, data) => {
 
-            if(data.broadcast) {
-                this.CLIENT.broadcast(client, `${client.id} says '${data.msg}'`);
-            }
+            this.CLIENT.sendMessage(client, data);
         });
     }
 

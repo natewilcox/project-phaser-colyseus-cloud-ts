@@ -32,7 +32,7 @@ export default class ServerService {
                 this.serverEvents.emit(ServerEvents.OnStateChange, state);
             });
 
-             this.room.onMessage(ServerMessages.SendMessage, (data) => {
+            this.room.onMessage(ServerMessages.SendMessage, (data) => {
                 this.serverEvents.emit(ServerEvents.OnMessage, data);
             });
 

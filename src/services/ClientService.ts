@@ -1,5 +1,5 @@
 import { GameRoom } from "../rooms/GameRoom";
-import { BroadcastMessageCommand } from "../commands/BroadcastMessageCommand";
+import { SendMessageCommand } from "../commands/SendMessageCommand";
 import { ClientMessages } from "../types/ClientMessages";
 
 export default class ClientService {
@@ -10,8 +10,8 @@ export default class ClientService {
         this.room = room;
     }
 
-    broadcast(client: any, msg: string) {
-        this.room.dispatcher.dispatch(new BroadcastMessageCommand(), { client, msg });
+    sendMessage(client: any, msg: any) {
+        this.room.dispatcher.dispatch(new SendMessageCommand(), { client, msg });
     }
 
     onMessage(cb: (client: any, data: any) => void) {
