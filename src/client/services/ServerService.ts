@@ -36,6 +36,7 @@ export default class ServerService {
                 this.serverEvents.emit(ServerEvents.OnMessage, data);
             });
 
+            return this.room.state;
         }
         catch(e) {
             console.log("JOIN ERROR", e);

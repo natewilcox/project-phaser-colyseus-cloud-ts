@@ -1,8 +1,9 @@
-import type { GameRoomState } from "../../rooms/schema/GameRoomState";
 import ServerService from "../services/ServerService";
 
 export class GameScene extends Phaser.Scene
 {
+    serverObjects: Phaser.Physics.Arcade.Group;
+
     private SERVER: ServerService;
 
     constructor () {
@@ -10,24 +11,60 @@ export class GameScene extends Phaser.Scene
     }
 
     preload () {
-       
+        this.load.image("ball", "images/ball.png");
     }
 
     async create (config: { SERVER: ServerService }) {
         
-        this.SERVER = config.SERVER;
-        this.SERVER.joinRoom('my_room');
+        this.physics.world.setBoundsCollision(true, true, true, true);
 
-        let text = this.add.text(100, 100, 'tick: ');
-
-        this.SERVER.onStateChange((state: GameRoomState) => {
-            text.setText('tick: ' + state.tick);
-
-            if(state.tick % 10 == 0) {
-                this.SERVER.sendMessage({ msg: "Hello", broadcast: true });
-            }
+        this.serverObjects = this.physics.add.group({
+            classType: Phaser.Physics.Arcade.Sprite
         });
 
-        this.SERVER.onMessage(msg => console.log(msg));
+        try {
+
+            this.SERVER = config.SERVER;
+            const state = await this.SERVER.joinRoom('my_room');
+    
+            // DEMO of initial state syncrhonization
+            state.serverObjects.onAdd((serverObject, key) => {
+
+                const serverObjectSprite: Phaser.Physics.Arcade.Sprite = this.serverObjects.get(serverObject.x, serverObject.y);
+                serverObjectSprite.setSize(100, 100);
+                serverObjectSprite.setCollideWorldBounds(true);
+                //serverObjectSprite.setScale(0.5, 0.5);
+
+                serverObject.onChange((changes) => {
+                    changes.forEach(change => {
+                       
+                        let x = serverObjectSprite.getCenter().x;
+                        let y = serverObjectSprite.getCenter().y;
+
+                        switch(change.field) {
+
+                            case "x": 
+                                x = change.value;
+                                break;
+
+                            case "y": 
+                                y = change.value;
+                                break;
+                        }
+
+                        serverObjectSprite.setPosition(x, y);
+                    });
+                });
+            });
+
+            this.SERVER.onStateChange((state) => {
+                //console.log("room state changed");
+            });
+
+            this.SERVER.onMessage(msg => console.log(msg));
+        }
+        catch(e) {
+            console.error("unable to start game scene", e);
+        }
     }
 }
